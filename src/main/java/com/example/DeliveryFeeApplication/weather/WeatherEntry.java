@@ -1,35 +1,47 @@
-package com.example.DeliveryFeeApplication;
+package com.example.DeliveryFeeApplication.weather;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table
 public class WeatherEntry {
+
+    @Id
+    @SequenceGenerator(
+            name = "weather_sequence",
+            sequenceName = "weather_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "weather_sequence"
+    )
     private Long id;
     private Long timestamp;
     private String name;
     private String phenomenon;
-    private int WMOCode;
+    private int wmoCode;
     private double airTemperature;
     private double windSpeed;
-    private boolean isSnowofSleet;
-    private boolean isRain;
-    private boolean isExtremeConditions;
 
     public WeatherEntry() {
     }
 
-    public WeatherEntry(Long timestamp, String name, String phenomenon, int WMOCode, double airTemperature, double windSpeed) {
+    public WeatherEntry(Long timestamp, String name, String phenomenon, int wmoCode, double airTemperature, double windSpeed) {
         this.timestamp = timestamp;
         this.name = name;
         this.phenomenon = phenomenon;
-        this.WMOCode = WMOCode;
+        this.wmoCode = wmoCode;
         this.airTemperature = airTemperature;
         this.windSpeed = windSpeed;
     }
 
-    public WeatherEntry(Long id, Long timestamp, String name, String phenomenon, int WMOCode, double airTemperature, double windSpeed) {
+    public WeatherEntry(Long id, Long timestamp, String name, String phenomenon, int wmoCode, double airTemperature, double windSpeed) {
         this.id = id;
         this.timestamp = timestamp;
         this.name = name;
         this.phenomenon = phenomenon;
-        this.WMOCode = WMOCode;
+        this.wmoCode = wmoCode;
         this.airTemperature = airTemperature;
         this.windSpeed = windSpeed;
     }
@@ -50,8 +62,8 @@ public class WeatherEntry {
         return phenomenon;
     }
 
-    public int getWMOCode() {
-        return WMOCode;
+    public int getWmoCode() {
+        return wmoCode;
     }
 
     public double getAirTemperature() {
@@ -62,7 +74,7 @@ public class WeatherEntry {
         return windSpeed;
     }
 
-    public boolean isSnowofSleet() {
+    public boolean isSnowOrSleet() {
         return phenomenon.equals("snow") || phenomenon.equals("sleet");
     }
 
@@ -72,5 +84,18 @@ public class WeatherEntry {
 
     public boolean isExtremeConditions() {
         return phenomenon.equals("glaze") || phenomenon.equals("hail") || phenomenon.equals("thunder");
+    }
+
+    @Override
+    public String toString() {
+        return "WeatherEntry{" +
+                "id=" + id +
+                ", timestamp=" + timestamp +
+                ", name='" + name + '\'' +
+                ", phenomenon='" + phenomenon + '\'' +
+                ", WMOCode=" + wmoCode +
+                ", airTemperature=" + airTemperature +
+                ", windSpeed=" + windSpeed +
+                '}';
     }
 }

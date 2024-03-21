@@ -2,7 +2,7 @@ package com.example.DeliveryFeeApplication.deliveryFee;
 
 import com.example.DeliveryFeeApplication.enums.City;
 import com.example.DeliveryFeeApplication.enums.Vehicle;
-import com.example.DeliveryFeeApplication.WeatherEntry;
+import com.example.DeliveryFeeApplication.weather.WeatherEntry;
 import com.example.DeliveryFeeApplication.exception.ForbiddenVehicleException;
 import com.example.DeliveryFeeApplication.exception.InvalidParameterException;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ public class DeliveryFeeService {
     public Double getDeliveryFee(String cityName, String vehicleType) {
 
         // replace with real data when database exists
-        WeatherEntry weatherEntry = new WeatherEntry(112L, "Tallinn", "mist", 23, 13, 25);
+        WeatherEntry weatherEntry = new WeatherEntry(112L, "Tallinn", "mist", 23, 13, 18);
 
         City city = switch (cityName.toLowerCase()) {
             case "tallinn" -> City.TALLINN;
@@ -47,7 +47,7 @@ public class DeliveryFeeService {
             deliveryFee += vehicle.getATEFNegative10to0();
         if (weatherEntry.getWindSpeed() > 10)
             deliveryFee += vehicle.getWSEFBetween10and20();
-        if (weatherEntry.isSnowofSleet())
+        if (weatherEntry.isSnowOrSleet())
             deliveryFee += vehicle.getWPEFSnowAndSleet();
         if (weatherEntry.isRain())
             deliveryFee += vehicle.getWPEFRain();
