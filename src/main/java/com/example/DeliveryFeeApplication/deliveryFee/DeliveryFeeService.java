@@ -1,8 +1,8 @@
 package com.example.DeliveryFeeApplication.deliveryFee;
 
-import com.example.DeliveryFeeApplication.weather.WeatherEntry;
 import com.example.DeliveryFeeApplication.exception.ForbiddenVehicleException;
 import com.example.DeliveryFeeApplication.exception.InvalidParameterException;
+import com.example.DeliveryFeeApplication.weather.WeatherEntryDTO;
 import com.example.DeliveryFeeApplication.weather.WeatherService;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ public class DeliveryFeeService {
      * @return              delivery fee
      */
     public Double getDeliveryFee(String cityName, String vehicleType) {
-        WeatherEntry weatherEntry = weatherService.getLatestEntryByName(cityName);
+        WeatherEntryDTO weatherEntry = weatherService.getLatestEntryByName(cityName);
 
         City city = switch (cityName.toLowerCase()) {
             case "tallinn" -> City.TALLINN;
@@ -41,7 +41,7 @@ public class DeliveryFeeService {
      * @param weatherEntry  latest weather entry
      * @return              Vehicle value
      */
-    private static Vehicle getVehicle(String vehicleType, WeatherEntry weatherEntry) {
+    private static Vehicle getVehicle(String vehicleType, WeatherEntryDTO weatherEntry) {
         Vehicle vehicle = switch (vehicleType.toLowerCase()) {
             case "car" -> Vehicle.CAR;
             case "scooter" -> Vehicle.SCOOTER;
@@ -62,7 +62,7 @@ public class DeliveryFeeService {
      * @param weatherEntry  latest weather conditions in location
      * @return              delivery fee
      */
-    private static double calculateDeliveryFee(City city, Vehicle vehicle, WeatherEntry weatherEntry) {
+    private static double calculateDeliveryFee(City city, Vehicle vehicle, WeatherEntryDTO weatherEntry) {
         double deliveryFee = city.getRbf() + vehicle.getRbfIncrement(); // regional base fee + vehicle increment
         if (weatherEntry.getAirTemperature() < -10)
             deliveryFee += vehicle.getATEFLessThanNegative10();

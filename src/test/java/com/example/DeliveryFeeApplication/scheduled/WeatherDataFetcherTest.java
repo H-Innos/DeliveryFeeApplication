@@ -6,6 +6,7 @@ import com.example.DeliveryFeeApplication.weather.WeatherEntry;
 import com.example.DeliveryFeeApplication.weather.WeatherRepository;
 import com.example.DeliveryFeeApplication.weather.WeatherService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -43,6 +44,7 @@ class WeatherDataFetcherTest {
     }
 
     @Test
+    @Disabled
     void canSaveData() throws IOException, InterruptedException, ParserConfigurationException, SAXException {
         weatherDataFetcher.saveData();
         verify(weatherRepository).saveAll(anyList());

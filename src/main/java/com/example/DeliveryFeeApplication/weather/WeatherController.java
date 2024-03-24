@@ -23,10 +23,10 @@ public class WeatherController {
     }
 
     @GetMapping
-    public List<WeatherEntry> getAllWeatherEntries() {
+    public List<WeatherEntryDTO> getAllWeatherEntries() {
         return weatherService.getAllWeatherEntries();
     }
 
     @GetMapping(path="{name}")
-    public WeatherEntry getLatestWeatherEntryByName(@PathVariable String name) { return weatherService.getLatestEntryByName(name);}
+    public WeatherEntryDTO getLatestWeatherEntryByName(@PathVariable String name) { return weatherService.getLatestEntryByName(name);}
 }

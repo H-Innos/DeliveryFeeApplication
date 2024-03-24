@@ -3,6 +3,8 @@ package com.example.DeliveryFeeApplication.deliveryFee;
 import com.example.DeliveryFeeApplication.exception.ForbiddenVehicleException;
 import com.example.DeliveryFeeApplication.exception.InvalidParameterException;
 import com.example.DeliveryFeeApplication.weather.WeatherEntry;
+import com.example.DeliveryFeeApplication.weather.WeatherEntryDTO;
+import com.example.DeliveryFeeApplication.weather.WeatherEntryDTOMapper;
 import com.example.DeliveryFeeApplication.weather.WeatherService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,7 @@ class DeliveryFeeServiceTest {
     @Mock
     private WeatherService weatherService;
     private DeliveryFeeService service;
+    private WeatherEntryDTOMapper weatherEntryDTOMapper = new WeatherEntryDTOMapper();
 
     @BeforeEach
     void setUp() {
@@ -59,10 +62,14 @@ class DeliveryFeeServiceTest {
      */
     @Test
     void throwsExceptionWhenVehicleIsForbidden() {
-        WeatherEntry windSpeedOver20 = new WeatherEntry(1L, "Tallinn", "mist", 123, 20, 25);
-        WeatherEntry glaze = new WeatherEntry(1L, "Tallinn", "glaze", 123, 20, 10);
-        WeatherEntry hail = new WeatherEntry(1L, "Tallinn", "hail", 123, 20, 10);
-        WeatherEntry thunder = new WeatherEntry(1L, "Tallinn", "thunder", 123, 20, 10);
+        WeatherEntryDTO windSpeedOver20 = weatherEntryDTOMapper.apply(
+                new WeatherEntry(1L, "Tallinn", "mist", 123, 20, 25));
+        WeatherEntryDTO glaze = weatherEntryDTOMapper.apply(
+                new WeatherEntry(1L, "Tallinn", "glaze", 123, 20, 10));
+        WeatherEntryDTO hail = weatherEntryDTOMapper.apply(
+                new WeatherEntry(1L, "Tallinn", "hail", 123, 20, 10));
+        WeatherEntryDTO thunder = weatherEntryDTOMapper.apply(
+                new WeatherEntry(1L, "Tallinn", "thunder", 123, 20, 10));
 
 
         when(weatherService.getLatestEntryByName(anyString()))
@@ -123,10 +130,15 @@ class DeliveryFeeServiceTest {
      */
     @Test
     void canCalculateDeliveryFee() {
-        WeatherEntry w1 = new WeatherEntry(1L, "Tallinn", "mist", 123, 20, 5); // EC1, EC7, EC11, EC15
-        WeatherEntry w2 = new WeatherEntry(1L, "Tartu", "rain", 123, -5, 15); // EC2, EC8, EC10, EC12
-        WeatherEntry w3 = new WeatherEntry(1L, "Pärnu", "snow", 123, -20, 10); // EC3, EC9, EC10, EC13
-        WeatherEntry w4 = new WeatherEntry(1L, "Tallinn", "sleet", 123, 0, 20); //EC14
+        WeatherEntryDTO w1 = weatherEntryDTOMapper.apply(
+                new WeatherEntry(1L, "Tallinn", "mist", 123, 20, 5)); // EC1, EC7, EC11, EC15
+        WeatherEntryDTO w2 = weatherEntryDTOMapper.apply(
+                new WeatherEntry(1L, "Tartu", "rain", 123, -5, 15)); // EC2, EC8, EC10, EC12
+        WeatherEntryDTO w3 = weatherEntryDTOMapper.apply(
+                new WeatherEntry(1L, "Pärnu", "snow", 123, -20, 10)); // EC3, EC9, EC10, EC13
+        WeatherEntryDTO w4 = weatherEntryDTOMapper.apply(
+                new WeatherEntry(1L, "Tallinn", "sleet", 123, 0, 20)); //EC14
+
         when(weatherService.getLatestEntryByName(anyString()))
                 .thenReturn(w1);
         assertThat(service.getDeliveryFee("Tallinn", "car")).isEqualTo(4); // EC4
