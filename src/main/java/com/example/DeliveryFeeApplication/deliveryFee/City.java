@@ -1,11 +1,11 @@
-package com.example.DeliveryFeeApplication.enums;
+package com.example.DeliveryFeeApplication.deliveryFee;
 
 public enum City {
     TALLINN(3),
     TARTU(2.5),
     PÄRNU(2);
 
-    double rbf;
+    final double rbf; // regional base fee not considering vehicle type
 
     City(double rbf) {
         this.rbf = rbf;

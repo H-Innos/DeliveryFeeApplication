@@ -35,3 +35,12 @@ out/
 
 ### VS Code ###
 .vscode/
+
+
+# Ignore database-specific files (assuming they have certain extensions)
+/database/*.h2.db
+/database/*.mv.db
+
+# Ignore any generated or temporary files
+/database/*.tmp
+/database/*.log

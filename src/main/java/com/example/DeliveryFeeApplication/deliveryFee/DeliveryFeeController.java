@@ -14,6 +14,12 @@ public class DeliveryFeeController {
         this.deliveryFeeService = deliveryFeeService;
     }
 
+    /**
+     * Returns delivery fee according to request paramters.
+     * @param city      request parameter for city name
+     * @param vehicle   request parameter for vehicle type
+     * @return          delivery fee
+     */
     @GetMapping
     public double getDeliveryFee(
             @RequestParam @NonNull String city,

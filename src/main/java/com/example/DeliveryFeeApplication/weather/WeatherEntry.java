@@ -7,14 +7,8 @@ import jakarta.persistence.*;
 public class WeatherEntry {
 
     @Id
-    @SequenceGenerator(
-            name = "weather_sequence",
-            sequenceName = "weather_sequence",
-            allocationSize = 1
-    )
     @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "weather_sequence"
+            strategy = GenerationType.IDENTITY
     )
     private Long id;
     private Long timestamp;

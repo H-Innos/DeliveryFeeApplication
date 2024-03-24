@@ -1,18 +1,28 @@
 package com.example.DeliveryFeeApplication.deliveryFee;
 
-import com.example.DeliveryFeeApplication.enums.City;
-import com.example.DeliveryFeeApplication.enums.Vehicle;
 import com.example.DeliveryFeeApplication.weather.WeatherEntry;
 import com.example.DeliveryFeeApplication.exception.ForbiddenVehicleException;
 import com.example.DeliveryFeeApplication.exception.InvalidParameterException;
+import com.example.DeliveryFeeApplication.weather.WeatherService;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DeliveryFeeService {
-    public Double getDeliveryFee(String cityName, String vehicleType) {
 
-        // replace with real data when database exists
-        WeatherEntry weatherEntry = new WeatherEntry(112L, "Tallinn", "mist", 23, 13, 18);
+    private final WeatherService weatherService;
+
+    public DeliveryFeeService(WeatherService weatherService) {
+        this.weatherService = weatherService;
+    }
+
+    /**
+     * Returns the delivery fee according to the location and vehicle type, considering weather conditions.
+     * @param cityName      city name
+     * @param vehicleType   vehicle type
+     * @return              delivery fee
+     */
+    public Double getDeliveryFee(String cityName, String vehicleType) {
+        WeatherEntry weatherEntry = weatherService.getLatestEntryByName(cityName);
 
         City city = switch (cityName.toLowerCase()) {
             case "tallinn" -> City.TALLINN;
@@ -25,6 +35,12 @@ public class DeliveryFeeService {
         return calculateDeliveryFee(city, vehicle, weatherEntry);
     }
 
+    /**
+     * Returns the Vehicle value that corresponds to the name, and throws an exeption when the usage of the vehicle is forbidden.
+     * @param vehicleType   vehicle type
+     * @param weatherEntry  latest weather entry
+     * @return              Vehicle value
+     */
     private static Vehicle getVehicle(String vehicleType, WeatherEntry weatherEntry) {
         Vehicle vehicle = switch (vehicleType.toLowerCase()) {
             case "car" -> Vehicle.CAR;
@@ -39,16 +55,23 @@ public class DeliveryFeeService {
         return vehicle;
     }
 
+    /**
+     * Calculates the delivery fee according to location, vehicle and weather conditions.
+     * @param city          location
+     * @param vehicle       vehicle
+     * @param weatherEntry  latest weather conditions in location
+     * @return              delivery fee
+     */
     private static double calculateDeliveryFee(City city, Vehicle vehicle, WeatherEntry weatherEntry) {
-        double deliveryFee = city.getRbf() + vehicle.getRbfIncrement();
+        double deliveryFee = city.getRbf() + vehicle.getRbfIncrement(); // regional base fee + vehicle increment
         if (weatherEntry.getAirTemperature() < -10)
             deliveryFee += vehicle.getATEFLessThanNegative10();
-        if (weatherEntry.getAirTemperature() < 0)
+        else if (weatherEntry.getAirTemperature() <= 0)
             deliveryFee += vehicle.getATEFNegative10to0();
-        if (weatherEntry.getWindSpeed() > 10)
+        if (weatherEntry.getWindSpeed() >= 10)
             deliveryFee += vehicle.getWSEFBetween10and20();
         if (weatherEntry.isSnowOrSleet())
-            deliveryFee += vehicle.getWPEFSnowAndSleet();
+            deliveryFee += vehicle.getWPEFSnowOrSleet();
         if (weatherEntry.isRain())
             deliveryFee += vehicle.getWPEFRain();
         return deliveryFee;

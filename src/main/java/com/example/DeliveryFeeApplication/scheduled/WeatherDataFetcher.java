@@ -1,9 +1,9 @@
 package com.example.DeliveryFeeApplication.scheduled;
 
-import com.example.DeliveryFeeApplication.HttpClientService;
+import com.example.DeliveryFeeApplication.service.HttpClientService;
 import com.example.DeliveryFeeApplication.weather.WeatherEntry;
 import com.example.DeliveryFeeApplication.weather.WeatherRepository;
-import com.example.DeliveryFeeApplication.XmlParser;
+import com.example.DeliveryFeeApplication.service.XmlParser;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -29,14 +29,18 @@ public class WeatherDataFetcher {
         this.xmlParser = xmlParser;
     }
 
-    @Scheduled(cron = "0 15 * * * *")
+    /**
+     * Scheduled task for retrieving weather data.
+     */
+    @Scheduled(cron = "0 * * * * *")
     public void saveData(){
         try {
             HttpResponse<InputStream> response = httpClientService.fetchData(DATA_URL);
             Document doc = xmlParser.parseXml(response.body());
 
             Long timestamp = Long.parseLong(doc.getDocumentElement().getAttribute("timestamp"));
-            List<WeatherEntry> newEntries = processStations(doc, timestamp);
+
+            List<WeatherEntry> newEntries = getWeatherEntriesForObservableStationsFromDocument(doc, timestamp);
 
             weatherRepository.saveAll(newEntries);
         } catch (Exception e) {
@@ -44,7 +48,13 @@ public class WeatherDataFetcher {
         }
     }
 
-    private List<WeatherEntry> processStations(Document doc, Long timestamp) {
+    /**
+     * Retrieves the weather data for all stations from the document.
+     * @param doc       document
+     * @param timestamp timestamp to be added to the entries
+     * @return          list of weather entries, 1 for each of the relevant stations
+     */
+    private List<WeatherEntry> getWeatherEntriesForObservableStationsFromDocument(Document doc, Long timestamp) {
         List<WeatherEntry> entries = new ArrayList<>();
 
         NodeList stationNodes = doc.getElementsByTagName("station");
@@ -60,7 +70,13 @@ public class WeatherDataFetcher {
         return entries;
     }
 
-    public WeatherEntry createWeatherEntry(Element station, Long timestamp) {
+    /**
+     * Transforms an XML element into a weather entry object.
+     * @param station   XML element for the station
+     * @param timestamp attached timestamp
+     * @return          weather entry object
+     */
+    private WeatherEntry createWeatherEntry(Element station, Long timestamp) {
         String name = extractValueByTag(station, "name");
         String phenomenon = extractValueByTag(station, "phenomenon");
         int wmoCode = parseIntOrDefault(extractValueByTag(station, "wmocode"));
@@ -69,7 +85,13 @@ public class WeatherDataFetcher {
         return new WeatherEntry(timestamp, name, phenomenon, wmoCode, airTemperature, windSpeed);
     }
 
-    public String extractValueByTag(Element station, String tag) {
+    /**
+     * Extracts the text value from the tag of the XML element.
+     * @param station   XML element
+     * @param tag       tag name
+     * @return          corresponding value
+     */
+    private String extractValueByTag(Element station, String tag) {
         NodeList nodeList = station.getElementsByTagName(tag);
         if (nodeList.getLength() > 0) {
             return nodeList.item(0).getTextContent();
@@ -78,6 +100,11 @@ public class WeatherDataFetcher {
         }
     }
 
+    /**
+     * Returns integer value from the string or -1 if the string is empty.
+     * @param value string
+     * @return      integer value
+     */
     private int parseIntOrDefault(String value) {
         try {
             return Integer.parseInt(value);
@@ -86,6 +113,11 @@ public class WeatherDataFetcher {
         }
     }
 
+    /**
+     * Returns double value from the string or Double.NaN, if the string is empty.
+     * @param value string
+     * @return      double value
+     */
     private double parseDoubleOrDefault(String value) {
         try {
             return Double.parseDouble(value);

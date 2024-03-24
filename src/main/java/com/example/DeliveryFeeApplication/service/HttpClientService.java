@@ -1,4 +1,4 @@
-package com.example.DeliveryFeeApplication;
+package com.example.DeliveryFeeApplication.service;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -16,6 +16,11 @@ public class HttpClientService {
         this.client = HttpClient.newHttpClient();
     }
 
+    /**
+     * Returns the HTTP response.
+     * @param url   source URL
+     * @return      HTTP response
+     */
     public HttpResponse<InputStream> fetchData(String url) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))

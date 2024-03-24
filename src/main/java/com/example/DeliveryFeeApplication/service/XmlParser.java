@@ -1,4 +1,4 @@
-package com.example.DeliveryFeeApplication;
+package com.example.DeliveryFeeApplication.service;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -12,6 +12,12 @@ import java.io.InputStream;
 
 @Service
 public class XmlParser {
+
+    /**
+     * Parses an inputstream into a Document.
+     * @param inputStream   input stream
+     * @return              document
+     */
     public Document parseXml(InputStream inputStream) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
